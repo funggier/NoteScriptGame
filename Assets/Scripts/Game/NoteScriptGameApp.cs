@@ -505,12 +505,29 @@ namespace NoteScriptGame.Game
             Label(76,138,1120,60,"FREE PLAY // PIANO",titleStyle);
             Label(78,199,1240,42,"Computer keyboard: Z S X D C V G B H N J M ,   |   ESC to return",smallStyle);
             Rect(78,283,1440,410,new Color(.08f,.12f,.20f));
-            for(int i=0;i<PianoKeys.Length;i++)
+            // One chromatic octave with a real black/white piano arrangement.
+            int[] whiteNotes = { 0, 2, 4, 5, 7, 9, 11, 12 };
+            string[] names = { "C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5" };
+            const float pianoLeft = 119f, whiteWidth = 166f, whiteTop = 336f;
+            for (int i = 0; i < whiteNotes.Length; i++)
             {
-                float w=103, xx=119+i*104;
-                Rect(xx,336,w-3,285,new Color(.85f,.91f,.96f));
-                Label(xx+8,565,w-18,43,PianoKeys[i].ToString(),pianoKeyStyle);
-                if (GUI.Button(new Rect(xx,336,w-3,285),GUIContent.none,GUIStyle.none)) PlayPianoKey(i);
+                float px = pianoLeft + i * whiteWidth;
+                Rect(px, whiteTop, whiteWidth-3, 285, new Color(.85f,.91f,.96f));
+                Label(px+8, 557, whiteWidth-18, 29, names[i], pianoKeyStyle);
+                Label(px+8, 586, whiteWidth-18, 29, PianoKeys[whiteNotes[i]].ToString(), pianoKeyStyle);
+                if (GUI.Button(new Rect(px,whiteTop,whiteWidth-3,285),GUIContent.none,GUIStyle.none))
+                    PlayPianoKey(whiteNotes[i]);
+            }
+            int[] blackNotes = { 1, 3, 6, 8, 10 };
+            int[] blackAfterWhite = { 0, 1, 3, 4, 5 };
+            for (int i = 0; i < blackNotes.Length; i++)
+            {
+                float px = pianoLeft + (blackAfterWhite[i]+1)*whiteWidth-54;
+                Rect(px, whiteTop, 108, 181, new Color(.09f,.13f,.22f));
+                Rect(px+7, whiteTop+9, 94, 6, new Color(.21f,.70f,.90f));
+                Label(px, 467, 108, 37, PianoKeys[blackNotes[i]].ToString(), keyStyle);
+                if (GUI.Button(new Rect(px,whiteTop,108,181),GUIContent.none,GUIStyle.none))
+                    PlayPianoKey(blackNotes[i]);
             }
             Label(101,723,1410,60,"Native synthesized audio. Selectable sample instruments and piano-roll recording will be added to this standalone core.",smallStyle);
             if (Button(1252,747,238,55,"BACK")) ChangePage(Page.Library);
