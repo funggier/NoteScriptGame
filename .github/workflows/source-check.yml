@@ -8,21 +8,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Unity project/source and offline song pack
+      - name: Verify Unity project, native UI and offline songs
         shell: bash
         run: |
           set -euo pipefail
           test -f ProjectSettings/ProjectVersion.txt
           test -f Assets/Scenes/NoteScriptGame.unity
+          test -f Assets/Resources/NoteScriptGamePanel.asset
           test -f Assets/Scripts/Music/NoteScriptMarkdownParser.cs
           test -f Assets/Scripts/Music/RhythmChartGenerator.cs
           test -f Assets/Scripts/Audio/MusicPlaybackEngine.cs
           test -f Assets/Scripts/Game/NoteScriptGameApp.cs
+          test -f Assets/Scripts/Game/NoteScriptGameNativeUI.cs
           test -f Assets/Editor/ProjectSetup.cs
+          test -f Assets/Editor/HighDpiSetup.cs
+          test -f Assets/Editor/NativeUiQualification.cs
+          grep -q 'm_ScaleMode: 0' Assets/Resources/NoteScriptGamePanel.asset
+          grep -q 'UIDocument' Assets/Scenes/NoteScriptGame.unity
+          grep -q '16f / 9f' Assets/Scripts/Game/NoteScriptGameNativeUI.cs
+          if grep -q 'GUI.matrix' Assets/Scripts/Game/NoteScriptGameApp.cs; then
+            echo "Legacy low-resolution IMGUI scaling detected" >&2
+            exit 1
+          fi
           count="$(find Assets/StreamingAssets/Songs -maxdepth 1 -type f -name '*.md' | wc -l)"
           test "$count" -ge 21
           if grep -R -E 'HttpClient|Process[.]Start|node[.]exe|127[.]0[.]0[.]1:19427' Assets/Scripts; then
             echo "Unexpected old-runtime integration in Unity code" >&2
             exit 1
           fi
-          echo "PASS: Unity source and $count offline .md songs present. This is NOT a Unity compilation test."
+          echo "PASS: native UI assets and $count offline .md songs present."
+          echo "Note: static CI cannot validate Unity compilation, rendering, audio or user input."

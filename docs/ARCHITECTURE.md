@@ -51,7 +51,8 @@ Six columns A/S/D/J/K/L, deterministic pitch/trigger mapping and Easy/Normal/Har
 
 ## Next engineering tasks
 
-- [ ] Replace IMGUI front end with modular UI Toolkit views and audio-calibrated visual track, preserving the core APIs.
+- [x] Replace fixed-size IMGUI front end with native-resolution UI Toolkit, 16:9 Rhythm playfield, 23–27-inch reference displays, saved UI scale and fullscreen/windowed settings. See UI-DISPLAY.md.
+- [ ] Visually verify UI Toolkit on physical 1080p/1440p displays and refine small-window behavior.
 - [ ] Add actual folder-based audio sample packs and layered/velocity samples; manage voice lifetime and cache eviction.
 - [ ] Add genuine editable Piano Roll, recorder, multi-track mixer and `.nsg` with explicit versioned schema.
 - [ ] Add file picker/folder drop and batch-import UI with per-song diagnostic report.

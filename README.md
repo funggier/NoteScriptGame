@@ -28,8 +28,17 @@ The source repo is independent of NoteScript: no Node.js server, web UI, remote 
 | Rhythm/listener/free play | Esc: return to library |
 | Free-play piano | Z S X D C V G B H N J M , |
 
-The UI keeps a fixed 1600:900 virtual layout scaled uniformly to the window and is mouse-operable.
+The UI uses native-resolution Unity UI Toolkit instead of scaling a 1600x900 image. The Rhythm playfield keeps its own 16:9 aspect ratio.
 
+## Display resolution and UI size
+
+Reference displays are 23–27-inch monitors at Full HD 1920×1080 and QHD 2560×1440. The Windows player uses native fullscreen by default. Rhythm maintains a 16:9 playfield without stretching it.
+
+Open SETTINGS on the main navigation bar to choose UI SCALE 85%, 100%, 110% or 125%, or switch between borderless native fullscreen and windowed 16:9. The selected UI scale is stored in PlayerPrefs; the first-run value is 110% at viewport heights of 1200px or more, 100% otherwise.
+
+The runtime panel asset is Assets/Resources/NoteScriptGamePanel.asset. In the Unity Editor, use NoteScriptGame > Configure Native-Resolution UI to repair scene/panel wiring. NoteScriptGame > Verify and Build Native UI runs setup, Markdown/chart tests and the Windows build.
+
+See docs/UI-DISPLAY.md for technical details and verification limits.
 ## Markdown files
 
 Import an existing NoteScript `.md` song using the path field on the Library page, or copy it to `UserSongs/` beside the Unity project / built executable and press **REFRESH FILES**. The original file is never changed by import. The built-in original song collection is distributed under `Assets/StreamingAssets/Songs/`.

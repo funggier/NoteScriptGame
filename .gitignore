@@ -25,3 +25,6 @@
 UserSongs/
 # Keep Unity meta files committed
 !Assets/**/*.meta
+
+# Local Unity Package Manager UI preferences
+ProjectSettings/PackageManagerSettings.asset
