@@ -8,24 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Unity project, native UI and offline songs
+      - name: Verify Unity project, native theme, Piano Roll and offline songs
         shell: bash
         run: |
           set -euo pipefail
           test -f ProjectSettings/ProjectVersion.txt
           test -f Assets/Scenes/NoteScriptGame.unity
           test -f Assets/Resources/NoteScriptGamePanel.asset
+          test -f Assets/Resources/NoteScriptGameRuntimeTheme.tss
           test -f Assets/Scripts/Music/NoteScriptMarkdownParser.cs
           test -f Assets/Scripts/Music/RhythmChartGenerator.cs
+          test -f Assets/Scripts/Music/MarkdownPianoRollEditor.cs
           test -f Assets/Scripts/Audio/MusicPlaybackEngine.cs
           test -f Assets/Scripts/Game/NoteScriptGameApp.cs
           test -f Assets/Scripts/Game/NoteScriptGameNativeUI.cs
+          test -f Assets/Scripts/Game/NoteScriptGamePianoRoll.cs
           test -f Assets/Editor/ProjectSetup.cs
           test -f Assets/Editor/HighDpiSetup.cs
           test -f Assets/Editor/NativeUiQualification.cs
+          test -f Assets/Editor/PianoRollQualification.cs
           grep -q 'm_ScaleMode: 0' Assets/Resources/NoteScriptGamePanel.asset
           grep -q 'UIDocument' Assets/Scenes/NoteScriptGame.unity
           grep -q '16f / 9f' Assets/Scripts/Game/NoteScriptGameNativeUI.cs
+          grep -q 'PianoRollQualification' Assets/Editor/PianoRollQualification.cs
           if grep -q 'GUI.matrix' Assets/Scripts/Game/NoteScriptGameApp.cs; then
             echo "Legacy low-resolution IMGUI scaling detected" >&2
             exit 1
@@ -36,5 +41,5 @@ jobs:
             echo "Unexpected old-runtime integration in Unity code" >&2
             exit 1
           fi
-          echo "PASS: native UI assets and $count offline .md songs present."
-          echo "Note: static CI cannot validate Unity compilation, rendering, audio or user input."
+          echo "PASS: native UI/Piano Roll source and $count offline .md songs present."
+          echo "Note: static CI does not compile Unity or validate visual rendering."

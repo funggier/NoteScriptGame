@@ -1,0 +1,33 @@
+:root {
+    color: rgb(235, 244, 255);
+}
+
+Label {
+    color: rgb(235, 244, 255);
+}
+
+Button {
+    color: rgb(239, 246, 255);
+    background-color: rgb(24, 47, 72);
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+TextField {
+    color: rgb(235, 244, 255);
+}
+
+.unity-text-input {
+    background-color: rgb(15, 28, 45);
+    color: rgb(235, 244, 255);
+    border-top-width: 1;
+    border-left-width: 1;
+    border-bottom-width: 1;
+    border-right-width: 1;
+    border-top-color: rgb(45, 69, 100);
+    border-left-color: rgb(45, 69, 100);
+    border-bottom-color: rgb(45, 69, 100);
+    border-right-color: rgb(45, 69, 100);
+}

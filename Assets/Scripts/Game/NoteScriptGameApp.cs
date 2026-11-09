@@ -110,6 +110,7 @@ namespace NoteScriptGame.Game
         private void ChangePage(Page next)
         {
             if (page == next) return;
+            if (page == Page.Studio && RollGuardLeaving(() => ChangePage(next))) return;
             player.StopSong();
             page = next;
             NativeBuildPage();
@@ -117,6 +118,7 @@ namespace NoteScriptGame.Game
 
         private void BeginListening()
         {
+            if (page == Page.Studio && RollGuardLeaving(BeginListening)) return;
             if (selected == null) return;
             player.Volume = .75f;
             player.StartSong(selected, .25);
@@ -125,6 +127,7 @@ namespace NoteScriptGame.Game
 
         private void BeginRhythm()
         {
+            if (page == Page.Studio && RollGuardLeaving(BeginRhythm)) return;
             if (selected == null) return;
             chart = RhythmChartGenerator.Generate(selected, difficulty);
             score = combo = maxCombo = perfect = great = good = miss = 0;
@@ -144,6 +147,7 @@ namespace NoteScriptGame.Game
 
         private void BeginFreePlay()
         {
+            if (page == Page.Studio && RollGuardLeaving(BeginFreePlay)) return;
             var song = new MusicSong { Title = "Free Play", DurationSeconds = 3600 };
             song.Tracks.Add(new MusicTrack { Name = "Keyboard", Sound = "piano", Volume = .8f });
             player.Volume = .90f;
@@ -255,14 +259,39 @@ namespace NoteScriptGame.Game
             if (filename.Length <= 3) { status="Choose a filename."; return; }
             try
             {
-                string target=Path.Combine(userSongsDirectory,filename);
-                File.WriteAllText(target,studioText);
+                string target = Path.Combine(userSongsDirectory, filename);
+                string originalPath = selected == null ? null :
+                    library.FirstOrDefault(row => row.Song == selected)?.Path;
+                // A new imported/bundled song must not overwrite a pre-existing user file.
+                if (File.Exists(target) &&
+                    !string.Equals(originalPath, target, StringComparison.OrdinalIgnoreCase))
+                {
+                    string stem = Path.GetFileNameWithoutExtension(filename);
+                    for (int n = 1; File.Exists(target); n++)
+                        target = Path.Combine(userSongsDirectory, stem + " (" + n + ").md");
+                }
+
+                // Write a complete validated file before atomically replacing a user's own song.
+                string temporary = Path.Combine(userSongsDirectory,
+                    ".nsg-" + Guid.NewGuid().ToString("N") + ".tmp");
+                try
+                {
+                    File.WriteAllText(temporary, studioText, new System.Text.UTF8Encoding(false));
+                    if (File.Exists(target)) File.Replace(temporary, target, null);
+                    else File.Move(temporary, target);
+                }
+                finally
+                {
+                    if (File.Exists(temporary)) File.Delete(temporary);
+                }
+
                 ReloadSongs();
-                var row=library.FirstOrDefault(r=>string.Equals(r.Path,target,StringComparison.OrdinalIgnoreCase));
-                if (row!=null) Select(row);
-                status = "Saved: "+target;
+                var row = library.FirstOrDefault(r =>
+                    string.Equals(r.Path, target, StringComparison.OrdinalIgnoreCase));
+                if (row != null) Select(row);
+                status = "Saved: " + target;
             }
-            catch(Exception ex) { status="SAVE ERROR: "+ex.Message; }
+            catch (Exception ex) { status = "SAVE ERROR: " + ex.Message; }
         }
 
         private void OnDestroy()

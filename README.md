@@ -9,7 +9,7 @@ The source repo is independent of NoteScript: no Node.js server, web UI, remote 
 - Main scene: `Assets/Scenes/NoteScriptGame.unity`
 - Windows project location: `T:\Space\Projects\Games\NoteScriptGame`
 - License: MIT (code). Check any third-party instrument/sample licenses independently.
-- Status: **v0.1 playable foundation**. Complete DAW-style piano roll/mixer and .nsg format are later phases.
+- Status: playable foundation plus first graphical Piano Roll. DAW mixer, live recording, sample adapters and native .nsg projects remain planned.
 
 ## First run
 
@@ -53,7 +53,7 @@ The importer is a newly-written **C# v0.1 notation parser** supporting:
 
 Unsupported syntax produces an error rather than silently dropping song events. Library, Rhythm and the basic text Studio all use the **same in-memory C# song structure**.
 
-In **MUSIC STUDIO** the first milestone provides a direct Markdown text editor, validation, new-song template and save to local `.md`. The full graphical piano roll, DAW mixer, recording, add-on SFZ/SF2/SF3 sound engines and native `.nsg` composition format are on the roadmap.
+In MUSIC STUDIO, the default view is a graphical Piano Roll: add, drag, transpose, resize and delete pitched notes in a 1/16-note grid; switch track/bar/octave, undo/redo, preview and save to .md. The Markdown source editor is still available. Saving modifies only changed bar lines and preserves other tracks and original prose. See docs/PIANO-ROLL.md.
 
 **Audio note:** v0.1 contains its own procedural synth implementation. Imported sound/instrument names select approximate timbres, **not the original sampled NoteScript instrument**, so the rendering is not acoustically identical. No runtime downloads or external services are required.
 
@@ -62,7 +62,7 @@ In **MUSIC STUDIO** the first milestone provides a direct Markdown text editor, 
 The Unity menu **NoteScriptGame → Run Markdown and Chart Smoke Tests** validates all bundled .md songs, deterministic Easy/Normal/Hard chart generation, note lanes, no same-onset conflicts, pitch conversion and rejection of malformed input.
 
 To rebuild the scene: **NoteScriptGame → Create Bootstrap Scene**.
-To build a Windows executable: **NoteScriptGame → Build Windows Standalone**.
+To build Windows: use NoteScriptGame > Build Windows Standalone. For Piano Roll tests use NoteScriptGame > Verify Piano Roll Markdown Roundtrip or Verify Piano Roll and Build Windows.
 
 ## Architecture
 

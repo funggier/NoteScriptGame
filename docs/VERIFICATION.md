@@ -84,3 +84,19 @@ Observed automated checks, all PASS:
 Remaining qualification: **interactive rendered UI inspection on 1920x1080 and 2560x1440 monitors**, visual font sharpness, actual pointer+keyboard gameplay and audio output must still be checked manually. The headless runtime check cannot establish pixel-perfect visible output.
 
 Source details: docs/UI-DISPLAY.md.
+## Piano Roll graphical editor verification (2026-11-09)
+
+Implementation: graphical Unity UI Toolkit Piano Roll sharing canonical MusicSong/MusicTrack/MusicEvent; four-bar pages; three-octave visible pitch range; 1/16 snap; add/select/drag/move/transpose/change duration/delete; track navigation; preview and source switch; 24-step Undo/Redo; unsaved-changes guard; validated, atomic, duplicate-safe Markdown file saving.
+
+Automated checks, PASS:
+- NSG-SMOKE PASS: 21 bundled .md songs; 14,700 source events; 31,880 rhythm chart notes across Easy/Normal/Hard.
+- NSG-PIANO-ROLL PASS: all 21 songs survive selective one-bar Markdown rewrite, all 14,700 events preserve semantic timing/pitches/velocity; cross-bar move succeeds; other track and prose retained; chord creation accepted; overlapping note rejected; game chart generated after an edit.
+- NSG-HIDPI PASS: project-owned ThemeStyleSheet imported in Unity Editor, linked to runtime PanelSettings and scene; native pixels used, 16:9 playfield.
+- NSG-BUILD PASS and NSG-PIANO-ROLL-WINDOWS PASS: Unity 6000.6.7f1 built Windows x64 player.
+- NSG-NATIVE-UI INITIALIZING: headless standalone 1904x998 window, 100% scale, theme True.
+- NSG-NATIVE-UI READY PASS.
+- NSG-PIANO-UI PASS: standalone runtime created graphical Piano Roll for Starter Pluck track with 32 events; no managed exceptions found.
+- The fully built player was copied into the real project Builds/Windows; existing UserSongs files were not touched.
+
+Log evidence lives outside source control at Builds/Verification/PianoRoll-20261109.
+Critical limitation: headless smoke proves initialization, not the rendered visual quality, hands-on mouse dragging/keyboard operation or audible sample output on real hardware. Separate interactive acceptance is still required.

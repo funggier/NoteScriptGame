@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -13,24 +11,26 @@ namespace NoteScriptGame.Editor
     {
         private const string ScenePath = "Assets/Scenes/NoteScriptGame.unity";
         private const string PanelPath = "Assets/Resources/NoteScriptGamePanel.asset";
+        private const string ThemePath = "Assets/Resources/NoteScriptGameRuntimeTheme.tss";
 
         [MenuItem("NoteScriptGame/Configure Native-Resolution UI")]
         public static void Configure()
         {
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
                 AssetDatabase.CreateFolder("Assets", "Resources");
+
+            AssetDatabase.ImportAsset(ThemePath, ImportAssetOptions.ForceSynchronousImport);
+            ThemeStyleSheet runtimeTheme = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(ThemePath);
+            if (runtimeTheme == null)
+                throw new Exception("Cannot import project-owned UI Toolkit theme: " + ThemePath);
+
             PanelSettings panel = AssetDatabase.LoadAssetAtPath<PanelSettings>(PanelPath);
             if (panel == null)
             {
                 panel = ScriptableObject.CreateInstance<PanelSettings>();
-                panel.scaleMode = PanelScaleMode.ConstantPixelSize;
-                panel.scale = 1f;
-                // The default runtime theme is optional; the game styles its visual elements explicitly.
-                var themes = Resources.FindObjectsOfTypeAll<ThemeStyleSheet>();
-                var theme = themes.FirstOrDefault(x => x != null && x.name.Contains("DefaultRuntimeTheme"));
-                if (theme != null) panel.themeStyleSheet = theme;
                 AssetDatabase.CreateAsset(panel, PanelPath);
             }
+            panel.themeStyleSheet = runtimeTheme;
             panel.scaleMode = PanelScaleMode.ConstantPixelSize;
             panel.scale = 1f;
             EditorUtility.SetDirty(panel);
@@ -55,7 +55,7 @@ namespace NoteScriptGame.Editor
             PlayerSettings.resizableWindow = true;
             PlayerSettings.runInBackground = true;
             AssetDatabase.SaveAssets();
-            Debug.Log("NSG-HIDPI PASS: native pixel UI Toolkit, constant panel scale, 16:9 playfield, 1080p/1440p defaults.");
+            Debug.Log("NSG-HIDPI PASS: project-owned runtime theme, native pixel UI Toolkit, 16:9 playfield, 1080p/1440p defaults.");
         }
     }
 }

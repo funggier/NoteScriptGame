@@ -119,6 +119,16 @@ namespace NoteScriptGame.Game
             Debug.Log("NSG-NATIVE-UI INITIALIZING: " + Screen.width + "x" + Screen.height + ", scale " + nativeUiPercent + "%, theme " + (runtimePanel.themeStyleSheet != null));
             NativeBuildPage();
             Debug.Log("NSG-NATIVE-UI READY: " + (nativeRoot != null && nativeContent != null ? "PASS" : "FAIL"));
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-nsg-piano-ui-smoke") >= 0)
+            {
+                ChangePage(Page.Studio);
+                if (rollGrid == null || rollSong == null || rollSong.Tracks.Count == 0)
+                    Debug.LogError("NSG-PIANO-UI FAIL: Graphical piano roll did not initialize.");
+                else
+                    Debug.Log("NSG-PIANO-UI PASS: track " + rollSong.Tracks[rollTrack].Name +
+                        ", " + rollSong.Events.Count + " events available, native grid initialized.");
+                ChangePage(Page.Library);
+            }
         }
 
         private static Label NText(VisualElement parent, string value, int font = 16, bool bold = false, Color? color = null)
@@ -604,47 +614,7 @@ namespace NoteScriptGame.Game
 
         private void NativeStudio()
         {
-            var content = NContent();
-            NText(content, "MUSIC STUDIO  /  MARKDOWN COMPOSE", 27, true);
-            NText(content, "Edit and validate NoteScript .md songs. Piano roll and multi-track mixer will follow.", 14, false, UiMute);
-            var columns = NRow(content);
-            columns.style.flexGrow = 1;
-            columns.style.minHeight = 0;
-            columns.style.marginTop = 15;
-
-            var editorCard = NCard(columns);
-            editorCard.style.flexGrow = 3;
-            editorCard.style.flexBasis = 690;
-            editorCard.style.minWidth = 360;
-            editorCard.style.minHeight = 400;
-            editorCard.style.marginRight = 12;
-            editorCard.style.marginBottom = 12;
-            nativeEditor = new TextField();
-            nativeEditor.multiline = true;
-            nativeEditor.value = studioText;
-            nativeEditor.style.fontSize = 16;
-            nativeEditor.style.flexGrow = 1;
-            nativeEditor.style.minHeight = 370;
-            nativeEditor.RegisterValueChangedCallback(e => studioText = e.newValue);
-            editorCard.Add(nativeEditor);
-
-            var tools = NCard(columns);
-            tools.style.flexGrow = 1;
-            tools.style.flexBasis = 280;
-            tools.style.minWidth = 260;
-            tools.style.minHeight = 400;
-            tools.style.marginBottom = 12;
-            NText(tools, "SONG FILE", 17, true);
-            nativeFilename = new TextField();
-            nativeFilename.value = studioFileName;
-            nativeFilename.RegisterValueChangedCallback(e => studioFileName = e.newValue);
-            nativeFilename.style.marginTop = 10;
-            nativeFilename.style.marginBottom = 12;
-            tools.Add(nativeFilename);
-            NButton(tools, "NEW SONG", () => { NewStudioSong(); nativeEditor.value = studioText; nativeFilename.value = studioFileName; NativeFooter(); });
-            NButton(tools, "VALIDATE", () => { ValidateStudio(false); NativeFooter(); });
-            NButton(tools, "SAVE .MD", () => { ValidateStudio(true); NativeFooter(); }, true);
-            NButton(tools, "LIBRARY", () => ChangePage(Page.Library));
+            BuildStudioWorkspace();
         }
 
         private void NativeResults()
@@ -746,6 +716,12 @@ namespace NoteScriptGame.Game
             {
                 if (player.IsPaused) player.ResumeSong();
                 else player.PauseSong();
+            }
+            if (!editing && nativeModal == null && page == Page.Studio && rollGraphical &&
+                (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+            {
+                if (Input.GetKeyDown(KeyCode.Z)) RollHistoryStep(true);
+                if (Input.GetKeyDown(KeyCode.Y)) RollHistoryStep(false);
             }
             if (!editing && nativeModal == null && page == Page.Rhythm)
             {
