@@ -1,0 +1,15 @@
+# Consistent Unity YAML and source line endings across Windows/macOS/Linux
+*.cs text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.unity text eol=lf
+*.asset text eol=lf
+*.meta text eol=lf
+*.uxml text eol=lf
+*.uss text eol=lf
+*.png binary
+*.jpg binary
+*.wav binary
+*.fbx binary
